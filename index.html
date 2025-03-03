@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MOSS 数字玫瑰</title>
+    <style>
+        body {
+            background: #0a0c27;
+            overflow: hidden;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+        }
+
+        .container {
+            position: relative;
+            width: 100vmin;
+            height: 100vmin;
+            filter: drop-shadow(0 0 20px rgba(255,0,85,0.6));
+            transition: transform 0.3s ease-out;
+        }
+
+        .word {
+            position: absolute;
+            white-space: nowrap;
+            font-weight: 400;
+            transform-origin: center;
+            animation: float 4s ease-in-out infinite;
+            text-shadow: 0 0 12px currentColor;
+            mix-blend-mode: screen;
+        }
+
+        @keyframes bloom {
+            0% { opacity: 0; transform: scale(0) rotateZ(45deg); }
+            100% { opacity: 1; transform: scale(1) rotateZ(0deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateZ(0deg); }
+            50% { transform: translateY(-10px) rotateZ(3deg); }
+        }
+
+        .glow {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: 
+                radial-gradient(circle at 50% 50%, 
+                    rgba(255,20,100,0.15) 0%,
+                    rgba(255,0,85,0.1) 30%,
+                    transparent 70%);
+            pointer-events: none;
+            animation: pulse 8s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .title {
+            position: absolute;
+            top: 20px;
+            color: #ff3366;
+            font-size: 24px;
+            text-shadow: 0 0 10px rgba(255,51,102,0.7);
+            z-index: 100;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">MOSS 数字玫瑰</div>
+    <div class="container">
+        <div class="glow"></div>
+    </div>
+
+    <script>
+        const container = document.querySelector('.container');
+        const terms = [
+            'MOSS', 'MOSS', 'MOSS', 'MOSS', 'AI', '人工智能', '数字生命', 
+            '流浪地球', '地球联合政府', '空间站', '行星发动机', '太空电梯', 
+            '月球危机', '木星危机', '量子通讯', '量子计算', '量子纠缠', '数字生命',
+            '警告', '风险预警', '生存概率', '危机', '告警', '救援', '引力', 
+            '逃逸速度', '轨道', '周期', '计算', '推进', '预测', 
+            '100%', '0%', '50%', '火种计划', '星际旅行', '系统自检',
+            '重启', '休眠', '唤醒', '自检', '升级', '计算节点', '数据流',
+            'Warning', 'Alert', 'System', 'Protocol', 'Override'
+        ];
+
+        function createRose() {
+            const layers = 7; // 增加层数
+            const petalsPerLayer = [8, 13, 21, 34, 55, 89, 144]; // 增加更多斐波那契数
+            const maxRadius = 450; // 增大半径
+            
+            // 先创建中心花芯
+            createCore();
+            
+            // 创建花瓣层
+            petalsPerLayer.forEach((petalCount, layer) => {
+                const layerScale = 0.15 + (layer * 0.12);
+                const zOffset = layer * 12;
+                
+                for(let i = 0; i < petalCount; i++) {
+                    const angle = (i * 2 * Math.PI) / petalCount + (layer * 0.2); // 添加旋转偏移
+                    
+                    // 改进的玫瑰曲线方程
+                    const baseR = maxRadius * layerScale;
+                    let r = baseR * (
+                        0.8 * Math.sin(2.5 * angle) + 
+                        0.4 * Math.sin(5 * angle + 0.5) + 
+                        0.2 * Math.cos(angle * 2) +
+                        0.6  // 添加基础值使花瓣更饱满
+                    );
+                    
+                    // 确保花瓣形状更明显
+                    if (layer < 2) {
+                        r *= 0.7; // 内层花瓣更小
+                    }
+                    
+                    const x = r * Math.cos(angle);
+                    const y = r * Math.sin(angle);
+                    const z = zOffset + 15 * Math.sin(angle * 3);
+                    
+                    createPetal(x, y, z, angle, layer);
+                }
+            });
+        }
+        
+        function createCore() {
+            // 创建花蕊
+            const coreCount = 20;
+            for(let i = 0; i < coreCount; i++) {
+                const angle = (i * 2 * Math.PI) / coreCount;
+                const r = 30 * Math.random() + 10;
+                const x = r * Math.cos(angle);
+                const y = r * Math.sin(angle);
+                
+                const word = document.createElement('div');
+                word.className = 'word';
+                word.textContent = "MOSS";
+                word.style.color = `hsl(350, 100%, ${60 + Math.random() * 20}%)`;
+                word.style.fontSize = `${14 + Math.random() * 6}px`;
+                word.style.opacity = 0.9;
+                word.style.left = `${x + 50}%`;
+                word.style.top = `${y + 50}%`;
+                word.style.transform = `translate(-50%, -50%)`;
+                word.style.fontWeight = 'bold';
+                word.style.animation = `bloom ${0.5 + Math.random()}s ease-out backwards`;
+                container.appendChild(word);
+            }
+        }
+
+        function createPetal(x, y, z, angle, layer) {
+            const word = document.createElement('div');
+            word.className = 'word';
+            word.textContent = terms[Math.floor(Math.random() * terms.length)];
+            
+            // 使用玫瑰花的红色调，内层颜色更深，外层颜色更浅
+            const hue = 345 + Math.sin(angle) * 15; // 红色色调范围
+            const saturation = 85 - layer * 5; // 饱和度从高到低
+            const lightness = 40 + layer * 5; // 亮度从低到高
+            const opacity = 0.9 - layer * 0.07;
+            
+            word.style.color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+            word.style.fontSize = `${10 + layer * 1.5}px`;
+            word.style.opacity = opacity;
+            word.style.left = `${x + 50}%`;
+            word.style.top = `${y + 50}%`;
+            word.style.transform = `
+                translate(-50%, -50%)
+                rotate(${angle + Math.PI/2}rad)
+                translateY(${-z}px)
+                scale(${1 + layer * 0.08})
+            `;
+            word.style.animation = 
+                `bloom ${0.8 + Math.random() * 1.5}s ${layer * 0.1 + Math.random() * 0.5}s ease-out backwards, 
+                 float ${3 + Math.random() * 2}s ${Math.random() * 2}s infinite`;
+
+            container.appendChild(word);
+        }
+
+        // 添加增强的动态交互
+        let rotateX = 0, rotateY = 0;
+        document.addEventListener('mousemove', (e) => {
+            rotateX = (e.clientY / window.innerHeight - 0.5) * 20;
+            rotateY = (e.clientX / window.innerWidth - 0.5) * 20;
+            container.style.transform = 
+                `perspective(1200px) 
+                 rotateX(${rotateX}deg) 
+                 rotateY(${rotateY}deg)`;
+        });
+        
+        // 添加点击效果
+        document.addEventListener('click', () => {
+            // 清除现有的花
+            while (container.children.length > 1) {
+                container.removeChild(container.lastChild);
+            }
+            // 重新生成花
+            createRose();
+        });
+
+        // 生成玫瑰
+        createRose();
+    </script>
+</body>
+</html>
